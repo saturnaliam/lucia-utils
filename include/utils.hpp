@@ -12,6 +12,7 @@
 #include <variant>
 #include <optional>
 #include <string>
+#include "windows.hpp"
 
 // int typedefs
 typedef uint8_t u8;
@@ -23,6 +24,9 @@ typedef int16_t s16;
 typedef int32_t s32;
 typedef int64_t s64;
 
+typedef uintptr_t uptr;
+typedef intptr_t sptr;
+
 namespace utils {
   // error type
   struct error_t {
@@ -33,6 +37,22 @@ namespace utils {
   // result type
   template<typename T>
   using result_t = std::variant<T, utils::error_t>;
+
+  inline result_t<uptr*> follow_pointer_path(const std::vector<uptr> &pointers, const uptr &base_address) {
+    uptr temp = base_address;
+
+    for (size_t i = 0; i < pointers.size() - 1; i++) {
+      temp = *reinterpret_cast<uptr*>(temp + pointers[i]);
+    }
+
+    uptr *final = reinterpret_cast<uptr*>(temp + pointers.back());
+
+    if (final == nullptr) {
+      return (utils::error_t){ .error_message = "Null address!", .error_number = 1 };
+    } else {
+      return final;
+    }
+  }
 }
 
 template<typename T>
