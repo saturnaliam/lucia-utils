@@ -23,23 +23,25 @@ typedef int16_t s16;
 typedef int32_t s32;
 typedef int64_t s64;
 
-// error type
-struct error_t {
-  std::string error_message;
-  uint64_t error_number;
-};
+namespace utils {
+  // error type
+  struct error_t {
+    std::string error_message;
+    uint64_t error_number;
+  };
 
-// result type
-template<typename T>
-using result_t = std::variant<T, error_t>;
-
-template<typename T>
-inline bool check_result(const result_t<T> &result) {
-  return (std::get_if<error_t>(&result) != nullptr);
+  // result type
+  template<typename T>
+  using result_t = std::variant<T, utils::error_t>;
 }
 
 template<typename T>
-inline std::optional<T> get_result(const result_t<T> &result) {
+inline bool check_result(const utils::result_t<T> result) {
+  return (std::get_if<utils::error_t>(&result) != nullptr);
+}
+
+template<typename T>
+inline std::optional<T> get_result(const utils::result_t<T> &result) {
   return check_result<T>(&result) ? std::optional<T>{std::get<T>(result)} : std::nullopt;
 }
 
