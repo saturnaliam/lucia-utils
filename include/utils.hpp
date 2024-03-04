@@ -1,5 +1,5 @@
-/* ============================== UTILS ============================== */
-/* Common functions, headers, and types I use across multiple projects */
+/* ================================================= UTILS ================================================= */
+/* Common functions, headers, and types I use across projects, especially for reverse engineering & modding. */
 
 #ifndef UTILS_HPP
 #define UTILS_HPP
@@ -10,6 +10,7 @@
 #include <iostream>
 #include <vector>
 #include <variant>
+#include <optional>
 #include <string>
 
 // int typedefs
@@ -35,6 +36,11 @@ using result_t = std::variant<T, error_t>;
 template<typename T>
 inline bool check_result(const result_t<T> &result) {
   return (std::get_if<error_t>(&result) != nullptr);
+}
+
+template<typename T>
+inline std::optional<T> get_result(const result_t<T> &result) {
+  return check_result<T>(&result) ? std::optional<T>{std::get<T>(result)} : std::nullopt;
 }
 
 #endif
