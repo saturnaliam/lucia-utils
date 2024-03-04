@@ -33,9 +33,8 @@ template<typename T>
 using result_t = std::variant<T, error_t>;
 
 template<typename T>
-inline bool check_result (const result_t<T> &result) {
-  const T *res = std::get_if<T>(&result);
-  return (res == nullptr);
+inline bool check_result(const result_t<T> &result) {
+  return (std::get_if<error_t>(&result) != nullptr);
 }
 
 #endif
